@@ -20,7 +20,7 @@ const (
 	MsgCancel        messageID = 8 // MsgCancel cancels a request
 )
 
-// Message stores ID and Payload of a message
+// Store ID and Payload of a message
 type Message struct {
 	ID      messageID
 	Payload []byte

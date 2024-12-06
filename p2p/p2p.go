@@ -12,13 +12,13 @@ import (
 	"time"
 )
 
-// MaxBlockSize is largest number of bytes a request can ask for
+// Largest number of bytes a request can ask for
 const MaxBlockSize = 16384
 
-// MaxBacklog is number of unfulfilled requests a client can have in its pipeline
+// Number of unfulfilled requests a client can have in its pipeline
 const MaxBacklog = 5
 
-// Torrent holds data required to download a torrent from a list of peers
+// Data required to download a torrent from a list of peers
 type Torrent struct {
 	Peers       []peers.Peer
 	PeerID      [20]byte
@@ -91,13 +91,12 @@ func attemptDownloadPiece(c *client.Client, pw *pieceWork) ([]byte, error) {
 		buf:    make([]byte, pw.length),
 	}
 
-	// Set deadline to unstick unresponsive peers
-	// 30 seconds is plenty of time for 262KB
+	// Set deadline to unstick unresponsive peers - 30 seconds is plenty of time for 262KB
 	c.Conn.SetDeadline(time.Now().Add(30 * time.Second))
 	defer c.Conn.SetDeadline(time.Time{}) // Disable deadline
 
 	for state.downloaded < pw.length {
-		// If unchoked. send requests until enough unfulfilled requests
+		// If unchoked - send requests until enough unfulfilled requests
 		if !state.client.Choked {
 			for state.backlog < MaxBacklog && state.requested < pw.length {
 				blockSize := MaxBlockSize
@@ -160,6 +159,13 @@ func (t *Torrent) startDownloadWorker(peer peers.Peer, workQueue chan *pieceWork
 			log.Println("Exiting", err)
 			workQueue <- pw // Put piece back on queue
 			return
+		}
+
+		err = checkIntegrity(pw, buf)
+		if err != nil {
+			log.Printf("piece #%d failed integrity check\n", pw.index)
+			workQueue <- pw // Put piece back on queue
+			continue
 		}
 
 		c.SendHave(pw.index)

@@ -11,7 +11,6 @@ import (
 	"time"
 )
 
-// A Client is a TCP connection with a peer
 type Client struct {
 	Conn     net.Conn
 	Choked   bool
@@ -65,8 +64,10 @@ func recvBitfield(conn net.Conn) (bitfield.Bitfield, error) {
 	return msg.Payload, nil
 }
 
-// New connects with a peer, completes a handshake, and receives a handshake
-// returns an err if any of those fail.
+// Connect with a peer
+// Complete a handshake
+// Receive a handshake
+// Return an err if any of the above fails
 func New(peer peers.Peer, peerID, infoHash [20]byte) (*Client, error) {
 	conn, err := net.DialTimeout("tcp", peer.String(), 3*time.Second)
 	if err != nil {
@@ -95,41 +96,41 @@ func New(peer peers.Peer, peerID, infoHash [20]byte) (*Client, error) {
 	}, nil
 }
 
-// Read reads and consumes a message from the connection
+// Read and consume a message from the connection
 func (c *Client) Read() (*message.Message, error) {
 	msg, err := message.Read(c.Conn)
 	return msg, err
 }
 
-// SendRequest sends a Request message to the peer
+// Send a _Request_ message to the peer
 func (c *Client) SendRequest(index, begin, length int) error {
 	req := message.FormatRequest(index, begin, length)
 	_, err := c.Conn.Write(req.Serialize())
 	return err
 }
 
-// SendInterested sends an Interested message to the peer
+// Send an _Interested_ message to the peer
 func (c *Client) SendInterested() error {
 	msg := message.Message{ID: message.MsgInterested}
 	_, err := c.Conn.Write(msg.Serialize())
 	return err
 }
 
-// SendNotInterested sends a NotInterested message to the peer
+// Send a _NotInterested_ message to the peer
 func (c *Client) SendNotInterested() error {
 	msg := message.Message{ID: message.MsgNotInterested}
 	_, err := c.Conn.Write(msg.Serialize())
 	return err
 }
 
-// SendUnchoke sends an Unchoke message to the peer
+// Send an _Unchoke_ message to the peer
 func (c *Client) SendUnchoke() error {
 	msg := message.Message{ID: message.MsgUnchoke}
 	_, err := c.Conn.Write(msg.Serialize())
 	return err
 }
 
-// SendHave sends a Have message to the peer
+// Send a _Have_ message to the peer
 func (c *Client) SendHave(index int) error {
 	msg := message.FormatHave(index)
 	_, err := c.Conn.Write(msg.Serialize())

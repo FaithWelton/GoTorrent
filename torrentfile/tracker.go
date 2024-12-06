@@ -15,6 +15,10 @@ type bencodeTrackerResp struct {
 	Peers    string `bencode:"peers"`
 }
 
+// _Announce_ our presence as a peer and retrieve a list of other peers
+// GET Request to the _announce_ URL supplied in the .torrent file with
+// info_hash: Identifies the file we want to download
+// 20 byte name to ID _outselves_ to trackers and peers
 func (t *TorrentFile) buildTrackerURL(peerID [20]byte, port uint16) (string, error) {
 	base, err := url.Parse(t.Announce)
 	if err != nil {
