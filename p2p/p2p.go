@@ -69,12 +69,14 @@ func (state *pieceProgress) readMessage() error {
 		if err != nil {
 			return err
 		}
+
 		state.client.Bitfield.SetPiece(index)
 	case message.MsgPiece:
 		n, err := message.ParsePiece(state.index, state.buf, msg)
 		if err != nil {
 			return err
 		}
+
 		state.downloaded += n
 		state.backlog--
 	}
@@ -127,7 +129,7 @@ func attemptDownloadPiece(c *client.Client, pw *pieceWork) ([]byte, error) {
 func checkIntegrity(pw *pieceWork, buf []byte) error {
 	hash := sha1.Sum(buf)
 	if !bytes.Equal(hash[:], pw.hash[:]) {
-		return fmt.Errorf("Index %d failed integrity check", pw.index)
+		return fmt.Errorf("index %d failed integrity check", pw.index)
 	}
 
 	return nil

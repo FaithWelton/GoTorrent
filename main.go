@@ -1,8 +1,5 @@
 package main
 
-//https://github.com/veggiedefender/torrent-client/tree/master
-// https://blog.jse.li/posts/torrent/
-
 import (
 	"goTorrent/torrentfile"
 	"log"

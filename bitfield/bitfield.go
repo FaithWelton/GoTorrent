@@ -6,7 +6,9 @@ type Bitfield []byte
 // HasPiece tells if a BitField has a particular index set
 func (bf Bitfield) HasPiece(index int) bool {
 	byteIndex := index / 8
+
 	offset := index % 8
+
 	if byteIndex < 0 || byteIndex >= len(bf) {
 		return false
 	}
@@ -17,6 +19,7 @@ func (bf Bitfield) HasPiece(index int) bool {
 // SetPiece sets a bit in the Bitfield
 func (bf Bitfield) SetPiece(index int) {
 	byteIndex := index / 8
+
 	offset := index % 8
 
 	// discard invalid bounded index

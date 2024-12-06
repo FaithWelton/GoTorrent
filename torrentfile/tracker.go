@@ -20,6 +20,7 @@ func (t *TorrentFile) buildTrackerURL(peerID [20]byte, port uint16) (string, err
 	if err != nil {
 		return "", err
 	}
+
 	params := url.Values{
 		"info_hash":  []string{string(t.InfoHash[:])},
 		"peer_id":    []string{string(peerID[:])},
@@ -29,6 +30,7 @@ func (t *TorrentFile) buildTrackerURL(peerID [20]byte, port uint16) (string, err
 		"compact":    []string{"1"},
 		"left":       []string{strconv.Itoa(t.Length)},
 	}
+
 	base.RawQuery = params.Encode()
 	return base.String(), nil
 }
